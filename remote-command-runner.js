@@ -57,7 +57,7 @@ function handleRequest(input) {
     }
 
     function handleInitialSuccess(id) {
-        pollExecutionResultViaJolokia(id, j4p, status, out, errorHandler);
+        pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler);
     }
 
     const args = [];
@@ -79,7 +79,7 @@ function handleRequest(input) {
     j4p.execute(...args);
 }
 
-function pollExecutionResultViaJolokia(id, j4p,  status, out, errorHandler) {
+function pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler) {
     const sleep = 3000;
     let iterations = 1200000 / sleep;
     const start = Date.now();
