@@ -60,6 +60,7 @@ function handleRequest(input) {
         pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler);
     }
 
+    /*
     const args = [];
     args.push("com.forkshunter:type=RemoteCommandProcessor")
     if (routes) {
@@ -77,6 +78,23 @@ function handleRequest(input) {
     });
 
     j4p.execute(...args);
+    */
+
+    const mbean ="com.forkshunter:type=RemoteCommandProcessor";
+    const operation = routes ? "requestExecuteMulti" : "requestExecute";
+    const operationArgs = routes ? [routes, command, arg] : [command, arg];
+    j4p.request({
+        type: "exec",
+        mbean: mbean,
+        operation: operation,
+        arguments: operationArgs,
+        method: "GET",
+        success: function (id) {
+            handleInitialSuccess(id);
+        },
+        error: errorHandler,
+        ajaxError: errorHandler
+    });
 }
 
 function pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler) {
