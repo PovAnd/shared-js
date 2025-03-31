@@ -49,17 +49,18 @@ function handleRequest(input) {
     }
 
     if (raw0)
-        out.addClass("raw0");
-
+        out.addClass("raw0")
+    const start = Date.now();
     const errorHandler = function (res) {
         status.text('ERROR');
         out.append(document.createTextNode(res.stacktrace ? res.stacktrace : JSON.stringify(res)));
     }
 
+    const args = []
+
     function handleInitialSuccess(id) {
         const sleep = 3000;
         let iterations = 1200000 / sleep;
-        const start = Date.now();
 
         const refreshResult = function () {
             j4p.execute("com.forkshunter:type=RemoteCommandProcessor", "executionResult", id, {
@@ -85,7 +86,6 @@ function handleRequest(input) {
         setTimeout(refreshResult, 1000);
     }
 
-    const args = [];
     args.push("com.forkshunter:type=RemoteCommandProcessor")
     if (routes) {
         args.push('requestExecuteMulti')
@@ -101,7 +101,7 @@ function handleRequest(input) {
         ajaxError: errorHandler
     });
 
-    j4p.execute(...args);
+    j4p.execute(...args)
 }
 
 function pollExecutionResultViaJolokia(id, j4p,  status, errorHandler) {
