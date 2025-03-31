@@ -47,7 +47,7 @@ function handleRequest(input) {
     if (form) {
         form.remove();
     }
-
+    
     if (raw0)
         out.addClass("raw0")
     const start = Date.now();
@@ -101,5 +101,5 @@ function handleRequest(input) {
         ajaxError: errorHandler
     });
 
-    j4p.execute(...args)
+    j4p.execute(...args);
 }
