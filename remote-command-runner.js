@@ -101,5 +101,5 @@ function handleRequest(input) {
         ajaxError: errorHandler
     });
 
-    j4p.execute(...args)
+    j4p.execute(...args);
 }
