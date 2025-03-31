@@ -49,7 +49,7 @@ function handleRequest(input) {
     }
 
     if (raw0)
-        out.addClass("raw0")
+        out.addClass("raw0");
 
     const errorHandler = function (res) {
         status.text('ERROR');
@@ -76,7 +76,7 @@ function handleRequest(input) {
         ajaxError: errorHandler
     });
 
-    j4p.execute(...args)
+    j4p.execute(...args);
 }
 
 function pollExecutionResultViaJolokia(id, j4p,  status, errorHandler) {
