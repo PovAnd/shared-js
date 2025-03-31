@@ -57,7 +57,32 @@ function handleRequest(input) {
     }
 
     function handleInitialSuccess(id) {
-        pollExecutionResultViaJolokia(id, j4p, status, errorHandler);
+        const sleep = 3000;
+        let iterations = 1200000 / sleep;
+        const start = Date.now();
+
+        const refreshResult = function () {
+            j4p.execute("com.forkshunter:type=RemoteCommandProcessor", "executionResult", id, {
+                success: function (res) {
+                    if (res.status === 'WAITING' && iterations-- > 0)
+                        setTimeout(refreshResult, sleep);
+
+                    if (id === -1000) {
+                        status.text('Use scan report from cache');
+                    } else {
+                        status.text(`${res.status} | ${((Date.now() - start) / 1000.0).toFixed(2)}s`);
+                    }
+
+                    for (const msg of res.messages) {
+                        out.append(raw ? msg : document.createTextNode(msg));
+                    }
+                },
+                error: errorHandler,
+                ajaxError: errorHandler
+            })
+        };
+
+        setTimeout(refreshResult, 1000);
     }
 
     const args = [];
