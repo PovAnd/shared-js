@@ -2,15 +2,22 @@ $(function () {
     handleRequest();
 });
 
-function handleRequest(input) {
-    let status = $('#status')
-    let form = input ? input.parentElement : null;
-    if (form) {
+function queryObj(form, name) {
+    let obj = $('#'+name);
+    if(form) {
         let div = document.createElement("div");
-        status.parentElement.append(div);
-        status = div;
-        form.remove();
+        let formName = name + '-' + form.id;
+        div.setAttribute('id', formName);
+        obj.get(0).parentElement.append(div);
+        return $('#'+formName);
+    }else{
+        return obj;
     }
+}
+
+function handleRequest(input) {
+    let form = input ? input.parentElement : null;
+    let status = queryObj(form,'status');
     const params = new URLSearchParams(location.search);
     const addr = params.get('addr');
     const routes = params.get('route') || params.get('routes');
@@ -36,13 +43,11 @@ function handleRequest(input) {
     const endpoint = addr || `https://${location.hostname}/jolokia/jui-${juiIndex}`;
     const j4p = new Jolokia(endpoint);
 
-    let out = $('#output');
+    let out = queryObj(form,'output');
     if (form) {
-        let div = document.createElement("div");
-        out.parentElement.append(div);
-        out = div;
+        form.remove();
     }
-
+    
     if (raw0)
         out.addClass("raw0")
     const start = Date.now();
