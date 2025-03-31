@@ -1,5 +1,16 @@
 $(function () {
-    const status = $('#status');
+    handleRequest();
+});
+
+function handleRequest(input) {
+    let status;
+    let form = input ? input.parentElement : null;
+    if (form) {
+        status = document.createElement("div");
+        form.parentElement.append(status);
+    } else {
+        status = $('#status');
+    }
     const params = new URLSearchParams(location.search);
     const addr = params.get('addr');
     const routes = params.get('route') || params.get('routes');
@@ -23,8 +34,17 @@ $(function () {
     }
 
     const endpoint = addr || `https://${location.hostname}/jolokia/jui-${juiIndex}`;
-    const j4p = new Jolokia(endpoint)
-    const out = $('#output');
+    const j4p = new Jolokia(endpoint);
+
+    let out;
+    if (form) {
+        out = document.createElement("div");
+        form.parentElement.append(out);
+        form.remove();
+    } else {
+        out = $('#output');
+    }
+
     if (raw0)
         out.addClass("raw0")
     const start = Date.now();
@@ -79,5 +99,4 @@ $(function () {
     });
 
     j4p.execute(...args)
-});
-
+}
