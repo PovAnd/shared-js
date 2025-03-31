@@ -88,7 +88,7 @@ function handleRequest(input) {
         mbean: mbean,
         operation: operation,
         arguments: operationArgs,
-        method: "GET",
+        method: "POST",
         success: function (id) {
             handleInitialSuccess(id);
         },
