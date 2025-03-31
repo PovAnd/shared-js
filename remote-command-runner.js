@@ -3,13 +3,13 @@ $(function () {
 });
 
 function handleRequest(input) {
-    let status;
+    let status = $('#status')
     let form = input ? input.parentElement : null;
     if (form) {
-        status = document.createElement("div");
-        form.parentElement.append(status);
-    } else {
-        status = $('#status');
+        let div = document.createElement("div");
+        status.parentElement.append(div);
+        status = div;
+        form.remove();
     }
     const params = new URLSearchParams(location.search);
     const addr = params.get('addr');
@@ -36,13 +36,11 @@ function handleRequest(input) {
     const endpoint = addr || `https://${location.hostname}/jolokia/jui-${juiIndex}`;
     const j4p = new Jolokia(endpoint);
 
-    let out;
+    let out = $('#output');
     if (form) {
-        out = document.createElement("div");
-        form.parentElement.append(out);
-        form.remove();
-    } else {
-        out = $('#output');
+        let div = document.createElement("div");
+        out.parentElement.append(div);
+        out = div;
     }
 
     if (raw0)
