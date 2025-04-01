@@ -56,11 +56,6 @@ function handleRequest(input) {
         out.append(document.createTextNode(res.stacktrace ? res.stacktrace : JSON.stringify(res)));
     }
 
-    function handleInitialSuccess(id) {
-        pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler);
-    }
-
-    /*
     const args = [];
     args.push("com.forkshunter:type=RemoteCommandProcessor")
     if (routes) {
@@ -72,14 +67,16 @@ function handleRequest(input) {
     args.push(command)
     args.push(arg)
     args.push({
-        success: handleInitialSuccess,
+        success: function (id){
+            pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler);
+        },
         error: errorHandler,
         ajaxError: errorHandler
     });
 
     j4p.execute(...args);
-    */
 
+    /*
     const mbean ="com.forkshunter:type=RemoteCommandProcessor";
     const operation = routes ? "requestExecuteMulti" : "requestExecute";
     const operationArgs = routes ? [routes, command, arg] : [command, arg];
@@ -90,11 +87,13 @@ function handleRequest(input) {
         arguments: operationArgs,
         method: "POST",
         success: function (id) {
-            handleInitialSuccess(id);
+            pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler);
         },
         error: errorHandler,
         ajaxError: errorHandler
     });
+
+     */
 }
 
 function pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler) {
