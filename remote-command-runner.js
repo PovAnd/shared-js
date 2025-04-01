@@ -59,6 +59,7 @@ function handleRequest(input) {
     const mbean ="com.forkshunter:type=RemoteCommandProcessor";
     const operation = routes ? "requestExecuteMulti" : "requestExecute";
     const operationArgs = routes ? [routes, command, arg] : [command, arg];
+
     if(method === 'post') {
         j4p.request({
             type: "exec",
