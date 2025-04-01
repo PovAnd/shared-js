@@ -28,7 +28,13 @@ function handleRequest(input) {
     const raw0 = display === 'raw0';
     const juiIndexEl = document.getElementById('jui-index');
     const juiIndex = juiIndexEl ? '0' : juiIndexEl.dataset.index;
-    const method = params.get('method') || 'get';
+    const method = (params.get('method') || 'get').toLowerCase();
+    let payload;
+    if(method === 'post'){
+        payload = "{'key':'Hello World'}";
+    }else{
+        payload = '';
+    }
 
     if (!addr && !routes) {
         status.text('Provide address or route!')
@@ -58,7 +64,7 @@ function handleRequest(input) {
 
     const mbean ="com.forkshunter:type=RemoteCommandProcessor";
     const operation = routes ? "requestExecuteMulti" : "requestExecute";
-    const operationArgs = routes ? [routes, command, arg] : [command, arg];
+    const operationArgs = routes ? [routes, command, arg, payload] : [command, arg, payload];
     const args = [];
 
     args.push(mbean)
