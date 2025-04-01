@@ -56,10 +56,10 @@ function handleRequest(input) {
         out.append(document.createTextNode(res.stacktrace ? res.stacktrace : JSON.stringify(res)));
     }
 
+    const mbean ="com.forkshunter:type=RemoteCommandProcessor";
+    const operation = routes ? "requestExecuteMulti" : "requestExecute";
+    const operationArgs = routes ? [routes, command, arg] : [command, arg];
     if(method === 'post') {
-        const mbean ="com.forkshunter:type=RemoteCommandProcessor";
-        const operation = routes ? "requestExecuteMulti" : "requestExecute";
-        const operationArgs = routes ? [routes, command, arg] : [command, arg];
         j4p.request({
             type: "exec",
             mbean: mbean,
@@ -74,15 +74,9 @@ function handleRequest(input) {
         });
     }else{
         const args = [];
-        args.push("com.forkshunter:type=RemoteCommandProcessor")
-        if (routes) {
-            args.push('requestExecuteMulti')
-            args.push(routes);
-        } else {
-            args.push('requestExecute')
-        }
-        args.push(command)
-        args.push(arg)
+        args.push(mbean)
+        args.push(operation);
+        args.push(operationArgs)
         args.push({
             success: function (id) {
                 pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler);
