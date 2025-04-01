@@ -59,34 +59,19 @@ function handleRequest(input) {
     const mbean ="com.forkshunter:type=RemoteCommandProcessor";
     const operation = routes ? "requestExecuteMulti" : "requestExecute";
     const operationArgs = routes ? [routes, command, arg] : [command, arg];
+    const args = [];
 
-    if(method === 'post') {
-        j4p.request({
-            type: "exec",
-            mbean: mbean,
-            operation: operation,
-            arguments: operationArgs,
-            method: "POST",
-            success: function (id) {
-                pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler);
-            },
-            error: errorHandler,
-            ajaxError: errorHandler
-        });
-    }else{
-        const args = [];
-        args.push(mbean)
-        args.push(operation);
-        args.push(...operationArgs);
-        args.push({
-            success: function (id) {
-                pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler);
-            },
-            error: errorHandler,
-            ajaxError: errorHandler
-        });
-        j4p.execute(...args);
-    }
+    args.push(mbean)
+    args.push(operation);
+    args.push(...operationArgs);
+    args.push({
+        success: function (id) {
+            pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler);
+        },
+        error: errorHandler,
+        ajaxError: errorHandler
+    });
+    j4p.execute(...args);
 }
 
 function pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler) {
