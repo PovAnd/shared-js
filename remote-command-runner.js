@@ -15,10 +15,12 @@ function queryObj(form, name) {
     }
 }
 
-function handleRequest(input) {
+function handleRequest(input, params) {
     let form = input ? input.parentElement : null;
     let status = queryObj(form,'status');
-    const params = new URLSearchParams(location.search);
+    if(!params){
+        params = new URLSearchParams(location.search);
+    }
     const addr = params.get('addr');
     const routes = params.get('route') || params.get('routes');
     const command = params.get('command');
