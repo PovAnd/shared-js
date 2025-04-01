@@ -63,12 +63,12 @@ function handleRequest(input) {
 
     args.push(mbean)
     args.push(operation);
-    args.push(method);
     args.push(...operationArgs);
     args.push({
         success: function (id) {
             pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler);
         },
+        method: method,
         error: errorHandler,
         ajaxError: errorHandler
     });
