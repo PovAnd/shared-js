@@ -56,44 +56,42 @@ function handleRequest(input) {
         out.append(document.createTextNode(res.stacktrace ? res.stacktrace : JSON.stringify(res)));
     }
 
-    const args = [];
-    args.push("com.forkshunter:type=RemoteCommandProcessor")
-    if (routes) {
-        args.push('requestExecuteMulti')
-        args.push(routes);
-    } else {
-        args.push('requestExecute')
+    if(method === 'post') {
+        const mbean ="com.forkshunter:type=RemoteCommandProcessor";
+        const operation = routes ? "requestExecuteMulti" : "requestExecute";
+        const operationArgs = routes ? [routes, command, arg] : [command, arg];
+        j4p.request({
+            type: "exec",
+            mbean: mbean,
+            operation: operation,
+            arguments: operationArgs,
+            method: "POST",
+            success: function (id) {
+                pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler);
+            },
+            error: errorHandler,
+            ajaxError: errorHandler
+        });
+    }else{
+        const args = [];
+        args.push("com.forkshunter:type=RemoteCommandProcessor")
+        if (routes) {
+            args.push('requestExecuteMulti')
+            args.push(routes);
+        } else {
+            args.push('requestExecute')
+        }
+        args.push(command)
+        args.push(arg)
+        args.push({
+            success: function (id) {
+                pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler);
+            },
+            error: errorHandler,
+            ajaxError: errorHandler
+        });
+        j4p.execute(...args);
     }
-    args.push(command)
-    args.push(arg)
-    args.push({
-        success: function (id){
-            pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler);
-        },
-        error: errorHandler,
-        ajaxError: errorHandler
-    });
-
-    j4p.execute(...args);
-
-    /*
-    const mbean ="com.forkshunter:type=RemoteCommandProcessor";
-    const operation = routes ? "requestExecuteMulti" : "requestExecute";
-    const operationArgs = routes ? [routes, command, arg] : [command, arg];
-    j4p.request({
-        type: "exec",
-        mbean: mbean,
-        operation: operation,
-        arguments: operationArgs,
-        method: "POST",
-        success: function (id) {
-            pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler);
-        },
-        error: errorHandler,
-        ajaxError: errorHandler
-    });
-
-     */
 }
 
 function pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler) {
