@@ -76,7 +76,7 @@ function handleRequest(input) {
         const args = [];
         args.push(mbean)
         args.push(operation);
-        args.push(operationArgs)
+        args.push(...operationArgs);
         args.push({
             success: function (id) {
                 pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler);
