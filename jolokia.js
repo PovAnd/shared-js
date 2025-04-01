@@ -582,8 +582,7 @@
             if (opts.jsonp && method === "post") {
                 throw new Error("Can not use JSONP with POST requests");
             }
-            //return method;
-            return "post";
+            return method;
         }
 
         // Add processing parameters given as request options
