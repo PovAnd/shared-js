@@ -87,7 +87,8 @@
          * @return the return value of the JMX operation.
          */
         function execute(mbean, operation) {
-            var req = { type: "exec", mbean: mbean, operation: operation , method: 'POST'};
+            //var req = { type: "exec", mbean: mbean, operation: operation};
+            var req = { type: "read", mbean: mbean, operation: operation};
             var opts, end = arguments.length;
             if (arguments.length > 2 && $.isPlainObject(arguments[arguments.length-1])) {
                 opts = arguments[arguments.length-1];

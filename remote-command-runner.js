@@ -62,10 +62,11 @@ function handleRequest(input) {
 
     if(method === 'post') {
         j4p.request({
-            type: "read",
+            type: "exec",
             mbean: mbean,
             operation: operation,
             arguments: operationArgs,
+            method: "POST",
             success: function (id) {
                 pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler);
             },
