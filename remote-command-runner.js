@@ -1,26 +1,24 @@
 $(function () {
-    handleRequest();
+    remoteAction();
 });
 
-function queryObj(form, name) {
-    let obj = $('#'+name);
-    if(form) {
+function findContainerById(form, id) {
+    let container = $('#' + id);
+    if (form) {
         let div = document.createElement("div");
-        let formName = name + '-' + form.id;
+        let formName = id + '-' + form.id;
         div.setAttribute('id', formName);
-        obj.get(0).parentElement.append(div);
-        return $('#'+formName);
-    }else{
-        return obj;
+        container.get(0).parentElement.append(div);
+        return $('#' + formName);
+    } else {
+        return container;
     }
 }
 
-function handleRequest(input, params) {
+function remoteAction(input) {
     let form = input ? input.parentElement : null;
-    let status = queryObj(form,'status');
-    if(!params){
-        params = new URLSearchParams(location.search);
-    }
+    let status = findContainerById(form, 'status');
+    const params = new URLSearchParams(location.search);
     const addr = params.get('addr');
     const routes = params.get('route') || params.get('routes');
     const command = params.get('command');
@@ -30,13 +28,6 @@ function handleRequest(input, params) {
     const raw0 = display === 'raw0';
     const juiIndexEl = document.getElementById('jui-index');
     const juiIndex = juiIndexEl ? '0' : juiIndexEl.dataset.index;
-    const method = (params.get('method') || 'get').toLowerCase();
-    let payload;
-    if(method === 'post'){
-        payload = "{'key':'Hello World'}";
-    }else{
-        payload = '';
-    }
 
     if (!addr && !routes) {
         status.text('Provide address or route!')
@@ -51,7 +42,7 @@ function handleRequest(input, params) {
     const endpoint = addr || `https://${location.hostname}/jolokia/jui-${juiIndex}`;
     const j4p = new Jolokia(endpoint);
 
-    let out = queryObj(form,'output');
+    let out = findContainerById(form, 'output');
     if (form) {
         form.remove();
     }
@@ -64,23 +55,37 @@ function handleRequest(input, params) {
         out.append(document.createTextNode(res.stacktrace ? res.stacktrace : JSON.stringify(res)));
     }
 
-    const mbean ="com.forkshunter:type=RemoteCommandProcessor";
-    const operation = routes ? "requestExecuteMulti" : "requestExecute";
-    const operationArgs = routes ? [routes, command, arg, payload] : [command, arg, payload];
-    const args = [];
+    let method = params.get('method');
+    if (method) {
+        method = method.toLowerCase();
+    } else {
+        method = 'get';
+    }
 
-    args.push(mbean)
-    args.push(operation);
-    args.push(...operationArgs);
-    args.push({
-        success: function (id) {
-            pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler);
-        },
-        method: method,
-        error: errorHandler,
-        ajaxError: errorHandler
-    });
-    j4p.execute(...args);
+    const payload = new Map();
+    if (form) {
+        payload.set('formId', form.id);
+    }
+
+    if (method !== 'post' && payload.size > 0) {
+        method = 'post';
+    }
+
+    j4p.execute("com.forkshunter:type=RemoteCommandProcessor",
+        routes ? "requestExecuteMulti" : "requestExecute",
+        ...(routes ? [routes] : []),
+        command,
+        arg,
+        payload.size > 0 ? JSON.stringify(Object.fromEntries(payload)) : "",
+        {
+            success: function (id) {
+                pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler);
+            },
+            method: method,
+            error: errorHandler,
+            ajaxError: errorHandler
+        }
+    );
 }
 
 function pollExecutionResultViaJolokia(id, j4p, raw, status, out, errorHandler) {
