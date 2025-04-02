@@ -1,10 +1,6 @@
 function detailClick(input) {
     let params = new URLSearchParams(location.search);
-    modifyArg(params);
-    handleRequest(input, params);
-}
-
-function modifyArg(params){
+    const form = input.parentElement;
     const arg = params.get('arg');
     let newArg;
     if (arg && arg.trim() !== '') {
@@ -21,4 +17,5 @@ function modifyArg(params){
         newArg = `mode:${form.id}`;
     }
     params.set('arg', newArg);
+    handleRequest(input, params);
 }
