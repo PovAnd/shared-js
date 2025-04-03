@@ -13,6 +13,7 @@ function findContainerById(form, id) {
             id: id,
             style: outputStyle()
         }).appendTo('body');
+        container = $(`#${id}`);
     }
     if (form) {
         let div = document.createElement("div");
