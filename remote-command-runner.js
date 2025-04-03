@@ -2,12 +2,17 @@ $(function () {
     remoteAction();
 });
 
+function outputStyle() {
+    return 'white-space: pre; font-family: monospace;'
+}
 
 function findContainerById(form, id) {
     let container = $(`#${id}`);
     if (container.length === 0) {
-        $('<div>', {id}).appendTo('body');
-        container = $(`#${id}`);
+        $('<div>', {
+            id: id,
+            style: outputStyle()
+        }).appendTo('body');
     }
     if (form) {
         let div = document.createElement("div");
@@ -77,23 +82,23 @@ function remoteAction(input) {
         out.append(document.createTextNode(res.stacktrace ? res.stacktrace : JSON.stringify(res)));
     };
 
+    const mbean = "com.forkshunter:type=RemoteCommandProcessor";
     const jolokia = createJolokia(addr);
+
     const successHandler = function (mainRes) {
         const sleep = 3000;
         const start = Date.now();
         let iterations = 1200000 / sleep;
         const refreshResult = function () {
-            jolokia.execute("com.forkshunter:type=RemoteCommandProcessor", "executionResult", mainRes, {
+            jolokia.execute(mbean, "executionResult", mainRes, {
                 success: function (res) {
                     if (res.status === 'WAITING' && iterations-- > 0)
                         setTimeout(refreshResult, sleep);
-
                     if (mainRes === -1000) {
                         status.text('Use scan report from cache');
                     } else {
                         status.text(`${res.status} | ${((Date.now() - start) / 1000.0).toFixed(2)}s`);
                     }
-
                     for (const msg of res.messages) {
                         //out.append(document.createTextNode(msg));
                         out.append(msg);
@@ -103,11 +108,10 @@ function remoteAction(input) {
                 ajaxError: errorHandler
             })
         };
-
         setTimeout(refreshResult, 1000);
     };
 
-    jolokia.execute("com.forkshunter:type=RemoteCommandProcessor",
+    jolokia.execute(mbean,
         routes ? "requestExecuteMulti" : "requestExecute",
         ...(routes ? [routes] : []),
         command,
