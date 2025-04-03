@@ -3,7 +3,6 @@ $(function () {
 });
 
 
-
 function findContainerById(form, id) {
     let container = $(`#${id}`);
     if (container.length === 0) {
@@ -84,12 +83,13 @@ function remoteAction(input) {
         out.append(document.createTextNode(res.stacktrace ? res.stacktrace : JSON.stringify(res)));
     };
 
+    const jolokia = createJolokia(addr);
     const successHandler = function (mainRes) {
         const sleep = 3000;
         const start = Date.now();
         let iterations = 1200000 / sleep;
         const refreshResult = function () {
-            j4p.execute("com.forkshunter:type=RemoteCommandProcessor", "executionResult", mainRes, {
+            jolokia.execute("com.forkshunter:type=RemoteCommandProcessor", "executionResult", mainRes, {
                 success: function (res) {
                     if (res.status === 'WAITING' && iterations-- > 0)
                         setTimeout(refreshResult, sleep);
@@ -112,18 +112,17 @@ function remoteAction(input) {
         setTimeout(refreshResult, 1000);
     };
 
-    createJolokia(addr)
-        .execute("com.forkshunter:type=RemoteCommandProcessor",
-            routes ? "requestExecuteMulti" : "requestExecute",
-            ...(routes ? [routes] : []),
-            command,
-            arg,
-            payload.size > 0 ? JSON.stringify(Object.fromEntries(payload)) : "",
-            {
-                method: method,
-                success: successHandler,
-                error: errorHandler,
-                ajaxError: errorHandler
-            }
-        );
+    jolokia.execute("com.forkshunter:type=RemoteCommandProcessor",
+        routes ? "requestExecuteMulti" : "requestExecute",
+        ...(routes ? [routes] : []),
+        command,
+        arg,
+        payload.size > 0 ? JSON.stringify(Object.fromEntries(payload)) : "",
+        {
+            method: method,
+            success: successHandler,
+            error: errorHandler,
+            ajaxError: errorHandler
+        }
+    );
 }
