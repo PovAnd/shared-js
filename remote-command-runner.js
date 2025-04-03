@@ -50,17 +50,11 @@ function remoteAction(input) {
     }
 
     const arg = params.get('arg') || '';
-    const display = params.get('display')
-    const raw = display === 'raw' || display === 'raw0';
-    const raw0 = display === 'raw0';
 
     let out = findContainerById(form, 'output');
     if (form) {
         form.remove();
     }
-
-    if (raw0)
-        out.addClass("raw0");
 
     let method = params.get('method');
     if (method) {
@@ -101,7 +95,7 @@ function remoteAction(input) {
                     }
 
                     for (const msg of res.messages) {
-                        out.append(raw ? msg : document.createTextNode(msg));
+                        out.append(document.createTextNode(msg));
                     }
                 },
                 error: errorHandler,
