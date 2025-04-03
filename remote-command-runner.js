@@ -95,7 +95,8 @@ function remoteAction(input) {
                     }
 
                     for (const msg of res.messages) {
-                        out.append(document.createTextNode(msg));
+                        //out.append(document.createTextNode(msg));
+                        out.append(msg);
                     }
                 },
                 error: errorHandler,
