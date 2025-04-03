@@ -8,19 +8,21 @@ function outputStyle() {
 
 function findContainerById(form, id) {
     let container = $(`#${id}`);
+
     if (container.length === 0) {
-        $('<div>', {
+        container = $('<div>', {
             id: id,
             style: outputStyle()
         }).appendTo('body');
-        container = $(`#${id}`);
     }
+
     if (form) {
-        let div = document.createElement("div");
-        let formName = id + '-' + form.id;
-        div.setAttribute('id', formName);
-        container.get(0).parentElement.append(div);
-        return $('#' + formName);
+        const formName = `${id}-${form.id}`;
+        const inner = $('<div>', {
+            id: formName,
+            style: outputStyle()
+        }).appendTo(container);
+        return $(`#${formName}`);
     } else {
         return container;
     }
